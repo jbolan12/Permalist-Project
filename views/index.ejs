@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<%- include('partials/header.ejs'); -%>
+
+<div class="box" id="heading">
+  <h1>
+    <%= listTitle %>
+  </h1>
+</div>
+<div class="box">
+  <% for(let item of listItems) { %>
+    <div class="item">
+      <!-- Form for marking task as completed -->
+      <form action="/mark-complete" method="post">
+        <input type="checkbox" onchange="this.form.submit()" name="completedItemId" value="<%= item.id %>" <%= item.is_completed ? "checked" : "" %>>
+      </form>
+
+      <p id="title<%= item.id %>" style="<%= item.is_completed ? 'text-decoration: line-through;' : '' %>">
+        <%= item.title %>
+      </p>
+
+      <!-- Form for editing the task -->
+      <form class="edit" action="/edit" method="post">
+        <input type="hidden" name="updatedItemId" value="<%= item.id %>">
+        <input id="input<%= item.id %>" type="text" name="updatedItemTitle" value="<%= item.title %>" autocomplete="off" autofocus="true" hidden="true" />
+        <button id="done<%= item.id %>" class="edit" type="submit" hidden>
+          <img class="icon" src="/assets/icons/check-solid.svg" alt="tick image">
+        </button>
+      </form>
+
+      <!-- Edit button -->
+      <button id="edit<%= item.id %>" class="edit" onclick="handler('<%= item.id %>')">
+        <img class="icon" src="/assets/icons/pencil-solid.svg" alt="pencil image">
+      </button>
+
+      <!-- Form for deleting the task -->
+      <form action="/delete" method="post" style="display:inline;">
+        <input type="hidden" name="deleteItemId" value="<%= item.id %>">
+        <button type="submit" class="delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </form>
+    </div>
+  <% } %>
+
+  <!-- Form for adding a new task -->
+  <form class="item" action="/add" method="post">
+    <input type="text" name="newItem" placeholder="New Item" autocomplete="off" autofocus="true" />
+    <button class="add" type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+
+<script>
+  function handler(id) {
+    document.getElementById("title" + id).setAttribute("hidden", true);
+    document.getElementById("edit" + id).setAttribute("hidden", true);
+    document.getElementById("done" + id).removeAttribute("hidden");
+    document.getElementById("input" + id).removeAttribute("hidden");
+  }
+</script>
+
+<%- include('partials/footer.ejs'); -%>
